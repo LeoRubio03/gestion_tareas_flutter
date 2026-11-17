@@ -70,13 +70,28 @@ class _TareaFormScreenState extends State<TareaFormScreen> {
       }
 
       if (!mounted) return;
+
       Navigator.pop(context);
+    } on StateError catch (e) {
+      if (!mounted) return;
+
+      final mensaje = e.message == 'Ya existe una tarea con ese título'
+          ? 'Ya existe una tarea con ese título'
+          : 'Error al guardar la tarea';
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(mensaje),
+          backgroundColor: Colors.red,
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Error al guardar la tarea'),
+          backgroundColor: Colors.red,
         ),
       );
     } finally {
@@ -108,8 +123,10 @@ class _TareaFormScreenState extends State<TareaFormScreen> {
                 size: 75,
                 color: Colors.indigo,
               ),
+
               const SizedBox(height: 25),
 
+              // CAMPO DEL TITULO
               TextFormField(
                 controller: tituloController,
                 maxLength: 80,
@@ -128,6 +145,8 @@ class _TareaFormScreenState extends State<TareaFormScreen> {
 
               const SizedBox(height: 15),
 
+              // CAMPO DE DESCRIPCION
+              // CORRECCION INC-02
               TextFormField(
                 controller: descripcionController,
                 maxLines: 4,
@@ -137,10 +156,17 @@ class _TareaFormScreenState extends State<TareaFormScreen> {
                   border: OutlineInputBorder(),
                   alignLabelWithHint: true,
                 ),
+                validator: (valor) {
+                  if (valor == null || valor.trim().isEmpty) {
+                    return 'La descripción es obligatoria';
+                  }
+                  return null;
+                },
               ),
 
               const SizedBox(height: 25),
 
+              // BOTON PARA GUARDAR O EDITAR
               ElevatedButton.icon(
                 onPressed: guardando ? null : guardarTarea,
                 icon: const Icon(Icons.save),

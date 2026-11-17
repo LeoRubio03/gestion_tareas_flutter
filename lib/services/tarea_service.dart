@@ -6,7 +6,8 @@ import '../models/tarea.dart';
 
 class TareaService {
   FirebaseFirestore get _firestore =>
-    FirebaseFirestore.instance;
+      FirebaseFirestore.instance;
+
   String get _usuarioId {
     final usuario = FirebaseAuth.instance.currentUser;
 
@@ -24,9 +25,12 @@ class TareaService {
         .collection('tasks');
   }
 
-  // Consultar tareas en tiempo real
+  // Consultar tareas ordenadas por fecha de creación
   Stream<List<Tarea>> obtenerTareas() {
-    return _tareas.snapshots().map((snapshot) {
+    return _tareas
+        .orderBy('fechaCreacion', descending: true)
+        .snapshots()
+        .map((snapshot) {
       return snapshot.docs.map((documento) {
         return Tarea.desdeMapa(
           documento.id,
@@ -36,14 +40,34 @@ class TareaService {
     });
   }
 
+  // Comprobar si ya existe una tarea con el mismo título
+  Future<bool> existeTitulo(
+    String titulo, {
+    String? excluirId,
+  }) async {
+    final resultado = await _tareas
+        .where('titulo', isEqualTo: titulo.trim())
+        .get();
+
+    return resultado.docs.any(
+      (documento) => documento.id != excluirId,
+    );
+  }
+
   // Crear una tarea
   Future<void> crearTarea(
     String titulo,
     String descripcion,
   ) async {
+    final tituloLimpio = titulo.trim();
+
+    if (await existeTitulo(tituloLimpio)) {
+      throw StateError('Ya existe una tarea con ese título');
+    }
+
     await _tareas.add({
-      'titulo': titulo,
-      'descripcion': descripcion,
+      'titulo': tituloLimpio,
+      'descripcion': descripcion.trim(),
       'completada': false,
       'fechaCreacion': FieldValue.serverTimestamp(),
     });
@@ -55,9 +79,18 @@ class TareaService {
     String titulo,
     String descripcion,
   ) async {
+    final tituloLimpio = titulo.trim();
+
+    if (await existeTitulo(
+      tituloLimpio,
+      excluirId: id,
+    )) {
+      throw StateError('Ya existe una tarea con ese título');
+    }
+
     await _tareas.doc(id).update({
-      'titulo': titulo,
-      'descripcion': descripcion,
+      'titulo': tituloLimpio,
+      'descripcion': descripcion.trim(),
     });
   }
 
