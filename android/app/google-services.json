@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "684908961041",
+    "project_id": "gestion-tareas-flutter",
+    "storage_bucket": "gestion-tareas-flutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684908961041:android:1d169c0bf3c91a5b5a40b0",
+        "android_client_info": {
+          "package_name": "com.example.gestion_tareas_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6NG9-rauEdbnRhDXphCF6PMLfyiz7psc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
