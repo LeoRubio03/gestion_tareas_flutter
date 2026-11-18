@@ -60,6 +60,11 @@ void main() {
         'Estudiar Flutter',
       );
 
+      await tester.enterText(
+        find.byType(TextFormField).at(1),
+        'Preparar actividad de pruebas',
+      );
+
       await tester.tap(find.text('Crear tarea'));
       await tester.pumpAndSettle();
 
